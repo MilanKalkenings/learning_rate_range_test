@@ -5,34 +5,25 @@ from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 
 class DataHandlerSetup:
     def __init__(self):
-        """
-        root_cifar10_train str: path to raw train data
-        root_cifar10_test str:  path to raw test data
-        transforms torchvision.Compose:  transformations performed on the data
-        batch_size int: batch size in all loaders
-        few_data bool: set True for performing initial experiments with few data
-        """
         self.root_cifar10_train = "../data/cifar10/train"
         self.root_cifar10_test = "../data/cifar10/test"
-        normalizer = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        normalizer = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # standard image normalization
         self.transforms = Compose([Resize([64, 64]), ToTensor(), normalizer])
         self.batch_size = 64
-        self.few_data = False
+        self.few_data = False  # True for performing initial experiments with few data
 
 
 class DataHandler:
     def __init__(self, setup: DataHandlerSetup):
-        """
-        see DataHandlerSetup
-        :param setup: DataHandlerSetup configuration
-        """
         self.root_cifar10_train = setup.root_cifar10_train
         self.root_cifar10_test = setup.root_cifar10_test
         self.transforms = setup.transforms
         self.batch_size = setup.batch_size
 
-        self.cifar10_train = torchvision.datasets.CIFAR10(root=self.root_cifar10_train, train=True, download=True, transform=self.transforms)
-        self.cifar10_test = torchvision.datasets.CIFAR10(root=self.root_cifar10_test, train=False, download=True, transform=self.transforms)
+        self.cifar10_train = torchvision.datasets.CIFAR10(root=self.root_cifar10_train, train=True, download=True,
+                                                          transform=self.transforms)
+        self.cifar10_test = torchvision.datasets.CIFAR10(root=self.root_cifar10_test, train=False, download=True,
+                                                         transform=self.transforms)
 
         if setup.few_data:
             data_train_few, _ = random_split(dataset=self.cifar10_train, lengths=[1_000, 49_000])
